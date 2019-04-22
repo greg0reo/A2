@@ -11,6 +11,14 @@ vector<item> bestSet; //the best solution we have right now, bestSet[i].include=
 int n; //total amount of items to choose from
 int C; //capacity of knapsack
 
+int finalProfit=0; // final profit, will be printed into output
+int finalSize=0; //final size, will be printed into output
+int nodesVisited=0; // total nodes visited, will be printed into output
+int leavesVisited=0; // total leaves visited, will be printed into output
+node root; // root node, for output
+node lastNode; //last node visited, for output
+
+
 class item{
 	public:
 
@@ -61,12 +69,7 @@ node newNode(int item, int profit, int weight, int maxprofit){
 
 int main(int argc, char *arv[]){
 
-	int finalProfit=0;
-	int finalSize=0;
-	int nodesVisited=0;
-	int leavesVisited=0;
-	node root;
-	node lastNode;
+
 
 	//READ IN ITEMS FROM FILE HERE
 
