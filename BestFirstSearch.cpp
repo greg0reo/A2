@@ -57,7 +57,7 @@ node lastNode; //last node visited, for output
 struct betterThan{
 	public:
 	bool operator()(node const& n1, node const& n2){
-		return n1.upperBound > n2.upperBound;
+		return n1.upperBound < n2.upperBound;
 	}
 };
 
@@ -84,6 +84,7 @@ int KWF(int profit, int weight, int item){
 			return best;
 		}
 	}
+	return best;
 }
 
 
@@ -104,26 +105,31 @@ node newNode(int itemNum, int profit, int weight, int maxprofit){
 
 void knapsack(node nodei){
 	nodesVisited++;
+	cout << nodesVisited << endl;
 	if(nodei.weight > C){
 		leavesVisited++;
-	}
-	if(nodei.weight <= C &&  nodei.profit > champ){
+		if(nodei.upperBound <= champ){
+			lastNode = nodei;
+		}
+	}else if(nodei.weight <= C &&  nodei.profit > champ){
+//		cout << "should get here" << endl;
 		champ = nodei.profit;
 		bestSet = nodei.include;
-	}
-	if(nodei.upperBound < champ){
-		leavesVisited++;
-		lastNode = nodei;
 	}else{
 		int fractionTaken = KWF(nodei.profit, nodei.weight, nodei.itemNum); //KWF if current item is put into sack
 		int fractionNont = KWF(nodei.profit, nodei.weight, nodei.itemNum+1); //KWF if current item is not put into sack
-		node ta = newNode( (nodei.itemNum+1) ,  (nodei.profit+items[nodei.itemNum+1].p) , (nodei.weight+items[nodei.itemNum+1].w) , fractionTaken); //temp node for taken path
+//		cout << "In between fractions" << endl;
+		node ta = newNode( (nodei.itemNum+1) ,  (nodei.profit+items[nodei.itemNum].p) , (nodei.weight+items[nodei.itemNum].w) , fractionTaken); //temp node for taken path
 		node na = newNode( (nodei.itemNum+1) , nodei.profit, nodei.weight, fractionNont); // temp node, for nontaken path
+//		cout << "afterta/na" << endl;
 		ta.include = nodei.include;
 		na.include = nodei.include;
-		ta.include[nodei.itemNum+1] = true;
-		na.include[nodei.itemNum+1] = true;
-
+//		cout << "after includes" << endl;
+//		ta.include[nodei.itemNum+1] = 1;
+//		na.include[nodei.itemNum+1] = 0;
+		ta.include.push_back(1);
+		na.include.push_back(0);
+//		cout << "includes done" << endl;
 		nodei.takenptr = &ta;
 		nodei.nontakenptr = &na;
 
@@ -150,6 +156,7 @@ void knapsack(node nodei){
 		knapsack(itemi+1, nontakenptr);
 	}
 */
+	return;
 }
 
 
@@ -179,6 +186,7 @@ int main(int argc, char *argv[]){
 	val2 = stoi(argu);
 	n = val;
 	C = val2;
+	cout << n << "  " << C << endl;
 
 	while(getline(ifile, line)){
 		stringstream liner(line);
@@ -189,6 +197,7 @@ int main(int argc, char *argv[]){
 		item temp; // temp item to transfer from input file to vector
 		temp.w = val;
 		temp.p = val2;
+		cout << temp.w << "  " << temp.p << endl;
 //		temp.include = false;
 		items.push_back(temp);
 
@@ -197,21 +206,26 @@ int main(int argc, char *argv[]){
 	ifile.close();
 
 	for(int i = 0; i<n; i++){
+		cout << i << endl;
 		items[i].r = items[i].p/items[i].w;
 	}
 
 	// SORT GOES HERE
 
 	sort(items.begin(), items.end(), useThis);
-
+	cout << "Made it past the sort" << endl;
 	//KNAPSACK GOES HERE
 	int fractions; // holds KWF for entire knapsack
 	fractions = KWF(0, 0, 0);
 	node temp2 = newNode( -1, 0, 0, fractions); //root node for knapsack
 	temp2.include = bestSet;
 	root = temp2;
-	knapsack(temp2);
+	champ = 0;
+	
 
+	cout << "Made it just before knapsack" << endl;
+	knapsack(temp2);
+	
 	cout << champ << endl;
 
 
