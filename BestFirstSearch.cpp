@@ -96,6 +96,7 @@ void knapsack(node nodei){
 	}
 	if(nodei.upperBound < champ){
 		leavesVisited++;
+		lastNode = nodei;
 	}else{
 		int fractionTaken = KWF(nodei.profit, nodei.weight, itemi); //KWF if current item is put into sack
 		int fractionNont = KWF(nodei.profit, nodei.weight, itemi+1); //KWF if current item is not put into sack
@@ -178,11 +179,14 @@ int main(int argc, char *arv[]){
 
 
 	//KNAPSACK GOES HERE
+	int fractions; // holds KWF for entire knapsack
+	fractions = KWF(0, 0, 0);
+	node temp2 = newNode(int -1, 0, 0, fractions); //root node for knapsack
+	temp2.include = bestSet;
+	root = temp2;
+	knapsack(temp2);
 
-		
-
-
-
+	cout << champ << endl;
 
 
 
