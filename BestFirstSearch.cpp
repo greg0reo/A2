@@ -231,6 +231,9 @@ int main(int argc, char *argv[]){
 	cout << "Made it just before knapsack" << endl;
 	knapsack(temp2);
 
+	ofstream myfile;
+	myfile.open(output);
+
 	int itemAmount;
 	int totalW;
 	for(int i = 0; i < n; i++){
@@ -239,14 +242,16 @@ int main(int argc, char *argv[]){
 			totalW += items[i].w;
 		}
 	}
-	cout << itemAmount << "," << champ << "," << totalW << endl;
-	cout << nodesVisited << "," << leavesVisited << endl;
+	myfile << itemAmount << "," << champ << "," << totalW << endl;
+	myfile << nodesVisited << "," << leavesVisited << endl;
 
 	for(int i = 0; i < n; i++){
 		if(bestSet[i-1] == 1){
-			cout << items[i].w << "," << items[i].p << endl;
+			myfile << items[i].w << "," << items[i].p << endl;
 		}
 	}
+
+	myfile.close();
 
 
 }
