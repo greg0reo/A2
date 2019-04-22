@@ -69,7 +69,7 @@ struct arComp{
 	}
 } useThis;
 
-
+// timer
 int KWF(int profit, int weight, int item){
 	int best = profit; //the best profit you can get, by the KWF
 	int heavy = weight; //total weight of knapsack
