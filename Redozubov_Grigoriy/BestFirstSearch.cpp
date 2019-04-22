@@ -23,7 +23,7 @@ int leavesVisited=0; // total leaves visited, will be printed into output
 
 
 
-
+//This is a class of items. Each item has its weight, price, and ratio of the two
 class item{
 	public:
 
@@ -36,14 +36,14 @@ class item{
 
 vector<item> items; // vector of all items
 
-
+//This is a class of nodes. Each node holds necessary information to solve the KP
 class node{
 	public:
 
 	int profit; //The total money currently in the sack
 	int weight; // the total weight currently in the sack
 	int upperBound; // the total max profit possible to gain at this moment
-	int itemNum;
+	int itemNum; // the index of the item currently being considered
 	vector<int> include; //the items included in this node
 	node * takenptr; // pointer in case next item is taken
 	node * nontakenptr; //pointer in case next item is not taken
@@ -54,26 +54,29 @@ node lastNode; //last node visited, for output
 
 
 
-struct betterThan{
+struct betterThan{ //overwriting operator for priority queue
 	public:
 	bool operator()(node const& n1, node const& n2){
 		return n1.upperBound < n2.upperBound;
 	}
 };
 
-priority_queue<node, vector<node>, betterThan> Q;
+priority_queue<node, vector<node>, betterThan> Q; //priority queue used to organise nodes
 
-struct arComp{
+struct arComp{ //overwriting operator for sort
 	bool operator() (item i, item j){
 		return i.r< j.r;
 	}
 } useThis;
 
 // timer
+//KWF solves for the knapsack problem with fractions. This is used to estimate which node will give the best item
+//It assumes that int item is the item after which you want to find the KWF.
+//price and weight of previous node dictates how much space is left after the node
 int KWF(int profit, int weight, int item){
 	int best = profit; //the best profit you can get, by the KWF
 	int heavy = weight; //total weight of knapsack
-	for(int i = item; i < n; i++){
+	for(int i = item; i < n; i++){ 
 		if(heavy+ items[i].w <= C){
 			best += items[i].p;
 			heavy += items[i].w;
@@ -87,7 +90,8 @@ int KWF(int profit, int weight, int item){
 	return best;
 }
 
-
+//This just initiates a new node. It might've been smarter to make this a constructor, but I didn't...
+//It assumes all information in the new node is known before the node is initialized
 node newNode(int itemNum, int profit, int weight, int maxprofit){
 	node temp; //creates new node to insert into tree
 	temp.profit = profit;
@@ -102,7 +106,8 @@ node newNode(int itemNum, int profit, int weight, int maxprofit){
 
 }
 
-
+//This is the problem itself. The priority queue determines the best next node to examin. knapsack will call that node and analyze it.
+//It assumes the rest of the code is working properly. All other code is just a helper function for this
 void knapsack(node nodei){
 	nodesVisited++;
 	cout << nodesVisited << endl;
@@ -143,7 +148,7 @@ void knapsack(node nodei){
 
 	}
 	if(!Q.empty()){
-		node next; //holds teh values of the next node
+		node next; //holds the values of the next node
 		next = Q.top();
 		Q.pop();
 		knapsack(next);
@@ -165,7 +170,7 @@ void knapsack(node nodei){
 }
 
 
-
+//This is the main section where the code is executed
 int main(int argc, char *argv[]){
 
 
@@ -173,10 +178,10 @@ int main(int argc, char *argv[]){
 
 	//READ IN ITEMS FROM FILE HERE
 
-	string input = argv[1];
-	string output = argv[2];
+	string input = argv[1]; //input.txt
+	string output = argv[2]; //output.txt
 
-	ifstream ifile(input);
+	ifstream ifile(input); //used to read input.txt
 
 	string line; // the string where a line from input will be stored
 	string argu; // string where a value from the input will be stored
@@ -184,7 +189,7 @@ int main(int argc, char *argv[]){
 	int val2; //int for second value from input
 
 	getline(ifile, line);
-	stringstream liner(line);
+	stringstream liner(line); //used to parse lines in input (seperate the comma)
 	getline(liner, argu, ',');
 	val = stoi(argu);
 	getline(liner, argu, ',');
@@ -208,7 +213,7 @@ int main(int argc, char *argv[]){
 
 	}
 
-	ifile.close();
+	ifile.close(); //close input file
 
 	for(int i = 0; i<n; i++){
 		cout << i << endl;
@@ -217,8 +222,8 @@ int main(int argc, char *argv[]){
 
 	// SORT GOES HERE
 
-	sort(items.begin(), items.end(), useThis);
-	cout << "Made it past the sort" << endl;
+	sort(items.begin(), items.end(), useThis); //sort the array of items 
+//	cout << "Made it past the sort" << endl;
 	//KNAPSACK GOES HERE
 	int fractions; // holds KWF for entire knapsack
 	fractions = KWF(0, 0, 0);
@@ -231,11 +236,11 @@ int main(int argc, char *argv[]){
 	cout << "Made it just before knapsack" << endl;
 	knapsack(temp2);
 
-	ofstream myfile;
+	ofstream myfile; //write to output.txt
 	myfile.open(output);
 
-	int itemAmount;
-	int totalW;
+	int itemAmount; //total amount of items
+	int totalW; //total weight
 	for(int i = 0; i < n; i++){
 		if(bestSet[i-1] == 1){
 			itemAmount++;
